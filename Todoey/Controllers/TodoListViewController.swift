@@ -11,6 +11,13 @@ import CoreData
 class TodoListViewController: UITableViewController {
     
     var itemArray = [Item]()
+    
+    var selectedCategory: Category? {
+        didSet {
+            loadItems()
+        }
+    }
+    
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     override func viewDidLoad() {
@@ -19,8 +26,6 @@ class TodoListViewController: UITableViewController {
 
         //to get a path to where the data is being stored for the current app
         print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
-        
-        loadItems()
     }
     
     //⚠️ NavBar tintColor & titleColor storyboard error fix :
@@ -91,7 +96,7 @@ class TodoListViewController: UITableViewController {
             
             newItem.title = textField.text!
             newItem.done = false
-            
+            newItem.parentCategory = self.selectedCategory
             
             self.itemArray.append(newItem)
             
@@ -119,7 +124,18 @@ class TodoListViewController: UITableViewController {
         self.tableView.reloadData()
     }
     
-    func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest()) {
+    func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest(), predicate: NSPredicate? = nil) {
+        
+        //❇️ Help to load only items from specific category. Not all the items from all category !!!
+        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
+        
+        if let additionalPredicate = predicate {
+            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate, additionalPredicate])
+        } else {
+            request.predicate = categoryPredicate
+        }
+        //❇️-------------------------------------------------------------------------------------------------
+        
         do {
           itemArray = try context.fetch(request)
         } catch {
@@ -137,8 +153,10 @@ extension TodoListViewController: UISearchBarDelegate {
     // ✅ Searching and showin the result character by charcter on real time
     // ❇️ Cancel(or erase) the text on search bar make going back to the original list
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        
         let request : NSFetchRequest<Item> = Item.fetchRequest()
-        request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+            
+        let predicate  = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
         request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
         
         if searchBar.text == "" {
@@ -148,7 +166,7 @@ extension TodoListViewController: UISearchBarDelegate {
                 searchBar.resignFirstResponder()
             }
         } else {
-            loadItems(with: request)
+            loadItems(with: request, predicate: predicate)
         }
 
     }
