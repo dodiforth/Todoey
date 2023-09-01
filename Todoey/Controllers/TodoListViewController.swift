@@ -15,13 +15,12 @@ class TodoListViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        setupNavBarAndTitleColor()
+
         //to get a path to where the data is being stored for the current app
         print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
         
         loadItems()
-        
-        setupNavBarAndTitleColor()
     }
     
     //⚠️ NavBar tintColor & titleColor storyboard error fix :
@@ -62,16 +61,18 @@ class TodoListViewController: UITableViewController {
     
     // MARK: - TableView Delegate Methods
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        //print(itemArray[indexPath.row])
         
         //-----------------------------------------------------------
 //        if itemArray[indexPath.row].done == false {
 //            itemArray[indexPath.row].done = true
 //        } else {
 //            itemArray[indexPath.row].done = false
-//        } ↘︎
+//        } ↘︎ toggling the done attribute from true to false.
         itemArray[indexPath.row].done = !itemArray[indexPath.row].done
         //-----------------------------------------------------------
+        //context.delete(itemArray[indexPath.row]) //-> Delete from the temp area of CoreData
+        //itemArray.remove(at: indexPath.row) //-> This does nothing for CoreData, only updates itemArray by deleting.
+        
         saveItems()
                 
         tableView.deselectRow(at: indexPath, animated: true)
@@ -118,17 +119,49 @@ class TodoListViewController: UITableViewController {
         self.tableView.reloadData()
     }
     
-    func loadItems() {
-        let request: NSFetchRequest<Item> = Item.fetchRequest()
+    func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest()) {
         do {
           itemArray = try context.fetch(request)
         } catch {
             print("Error fetching data from context \(error)")
         }
+        self.tableView.reloadData()
     }
-    
+
 }
 
+// MARK: - SearchBar Methods
 
+extension TodoListViewController: UISearchBarDelegate {
+    
+    // ✅ Searching and showin the result character by charcter on real time
+    // ❇️ Cancel(or erase) the text on search bar make going back to the original list
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        let request : NSFetchRequest<Item> = Item.fetchRequest()
+        request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+        
+        if searchBar.text == "" {
+            loadItems()
+            //❤️
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
+        } else {
+            loadItems(with: request)
+        }
+
+    }
+    
+      // ❗️ Showing the result only by the end of typing.
+//    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+//        let request: NSFetchRequest<Item> = Item.fetchRequest()
+//        //print(searchBar.text)
+//        request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+//        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+//        loadItems(with: request)
+//    }
+        
+}
 
 
