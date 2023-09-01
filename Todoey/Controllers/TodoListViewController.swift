@@ -108,7 +108,7 @@ class TodoListViewController: UITableViewController {
         present(alert, animated: true, completion: nil)
     }
     
-    // MARK: - Model Manipulation Methods
+    // MARK: - Data Manipulation Methods
     func saveItems() {
             
         do {
