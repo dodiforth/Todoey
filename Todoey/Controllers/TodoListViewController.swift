@@ -65,7 +65,8 @@ class TodoListViewController: UITableViewController {
         if let item = todoItems?[indexPath.row] {
             do {
                 try self.realm.write {
-                    item.done = !item.done
+                    realm.delete(item)
+//                    item.done = !item.done
                 }
             } catch {
                 print("Error saving done status, \(error)")
@@ -119,7 +120,6 @@ class TodoListViewController: UITableViewController {
 }
 
 // MARK: - SearchBar Methods
-
 //extension TodoListViewController: UISearchBarDelegate {
 //
 //    // ✅ Searching and showin the result character by charcter on real time
