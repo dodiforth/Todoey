@@ -14,7 +14,7 @@ class TodoListViewController: UITableViewController {
     
     var selectedCategory: Category? {
         didSet {
-            loadItems()
+           // loadItems()
         }
     }
     
@@ -92,13 +92,13 @@ class TodoListViewController: UITableViewController {
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
             //What will happen once the user clicks the "Add Item" button on our UIAlert
             
-            let newItem = Item(context: self.context)
-            
-            newItem.title = textField.text!
-            newItem.done = false
-            newItem.parentCategory = self.selectedCategory
-            
-            self.itemArray.append(newItem)
+//            let newItem = Item(context: self.context)
+//
+//            newItem.title = textField.text!
+//            newItem.done = false
+//            newItem.parentCategory = self.selectedCategory
+//
+//            self.itemArray.append(newItem)
             
             self.saveItems()
         }
@@ -124,52 +124,52 @@ class TodoListViewController: UITableViewController {
         self.tableView.reloadData()
     }
     
-    func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest(), predicate: NSPredicate? = nil) {
-        
-        //❇️ Help to load only items from specific category. Not all the items from all category !!!
-        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
-        
-        if let additionalPredicate = predicate {
-            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate, additionalPredicate])
-        } else {
-            request.predicate = categoryPredicate
-        }
-        //❇️-------------------------------------------------------------------------------------------------
-        
-        do {
-          itemArray = try context.fetch(request)
-        } catch {
-            print("Error fetching data from context \(error)")
-        }
-        self.tableView.reloadData()
-    }
+//    func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest(), predicate: NSPredicate? = nil) {
+//
+//        //❇️ Help to load only items from specific category. Not all the items from all category !!!
+//        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
+//
+//        if let additionalPredicate = predicate {
+//            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate, additionalPredicate])
+//        } else {
+//            request.predicate = categoryPredicate
+//        }
+//        //❇️-------------------------------------------------------------------------------------------------
+//
+//        do {
+//          itemArray = try context.fetch(request)
+//        } catch {
+//            print("Error fetching data from context \(error)")
+//        }
+//        self.tableView.reloadData()
+//    }
 
 }
 
 // MARK: - SearchBar Methods
 
-extension TodoListViewController: UISearchBarDelegate {
-    
-    // ✅ Searching and showin the result character by charcter on real time
-    // ❇️ Cancel(or erase) the text on search bar make going back to the original list
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        
-        let request : NSFetchRequest<Item> = Item.fetchRequest()
-            
-        let predicate  = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
-        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
-        
-        if searchBar.text == "" {
-            loadItems()
-            //❤️
-            DispatchQueue.main.async {
-                searchBar.resignFirstResponder()
-            }
-        } else {
-            loadItems(with: request, predicate: predicate)
-        }
-
-    }
+//extension TodoListViewController: UISearchBarDelegate {
+//
+//    // ✅ Searching and showin the result character by charcter on real time
+//    // ❇️ Cancel(or erase) the text on search bar make going back to the original list
+//    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+//
+//        let request : NSFetchRequest<Item> = Item.fetchRequest()
+//
+//        let predicate  = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+//        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+//
+//        if searchBar.text == "" {
+//            loadItems()
+//            //❤️
+//            DispatchQueue.main.async {
+//                searchBar.resignFirstResponder()
+//            }
+//        } else {
+//            loadItems(with: request, predicate: predicate)
+//        }
+//
+//    }
     
       // ❗️ Showing the result only by the end of typing.
 //    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
@@ -180,6 +180,6 @@ extension TodoListViewController: UISearchBarDelegate {
 //        loadItems(with: request)
 //    }
         
-}
+//}
 
 
