@@ -12,7 +12,7 @@ class SwipeTableViewController: UITableViewController, SwipeTableViewCellDelegat
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        tableView.rowHeight = 60.0
     }
     
     // MARK: - TableView DataSource Methods
