@@ -65,8 +65,7 @@ class TodoListViewController: UITableViewController {
         if let item = todoItems?[indexPath.row] {
             do {
                 try self.realm.write {
-                    realm.delete(item)
-//                    item.done = !item.done
+                    item.done = !item.done
                 }
             } catch {
                 print("Error saving done status, \(error)")
@@ -95,7 +94,7 @@ class TodoListViewController: UITableViewController {
                 } catch {
                     print("Error saving new items, \(error)")
                 }
-
+                
             }
             self.tableView.reloadData()
         }
@@ -120,38 +119,23 @@ class TodoListViewController: UITableViewController {
 }
 
 // MARK: - SearchBar Methods
-//extension TodoListViewController: UISearchBarDelegate {
-//
-//    // ✅ Searching and showin the result character by charcter on real time
-//    // ❇️ Cancel(or erase) the text on search bar make going back to the original list
-//    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-//
-//        let request : NSFetchRequest<Item> = Item.fetchRequest()
-//
-//        let predicate  = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
-//        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
-//
-//        if searchBar.text == "" {
-//            loadItems()
-//            //❤️
-//            DispatchQueue.main.async {
-//                searchBar.resignFirstResponder()
-//            }
-//        } else {
-//            loadItems(with: request, predicate: predicate)
-//        }
-//
-//    }
-
-// ❗️ Showing the result only by the end of typing.
-//    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-//        let request: NSFetchRequest<Item> = Item.fetchRequest()
-//        //print(searchBar.text)
-//        request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
-//        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
-//        loadItems(with: request)
-//    }
-
-//}
+extension TodoListViewController: UISearchBarDelegate {
+    
+    // ✅ Searching and showin the result character by charcter on real time
+    // ❇️ Cancel(or erase) the text on search bar make going back to the original list
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        
+        todoItems = todoItems?.filter("title CONTAINS[cd] %@", searchBar.text).sorted(byKeyPath: "title", ascending: true)
+        tableView.reloadData()
+        
+        if searchBar.text?.count == 0 {
+            loadItems()
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
+        }
+    }
+    
+}
 
 
