@@ -15,31 +15,41 @@ class TodoListViewController: SwipeTableViewController {
     
     let realm = try! Realm()
     
+    @IBOutlet weak var searchBar: UISearchBar!
+    
     var selectedCategory: Category? {
         didSet {
             loadItems()
         }
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+
+        if let colourHex = selectedCategory?.colour {
+            title = selectedCategory!.name
+            guard let navBar = navigationController?.navigationBar else { fatalError("Navigation controller doesn't exist.") }
+            
+            if let navBarColour = UIColor(hexString: colourHex) {
+                navBar.backgroundColor = navBarColour
+                navBar.standardAppearance.backgroundColor = navBarColour
+                navBar.scrollEdgeAppearance?.backgroundColor = navBarColour
+                navBar.tintColor = ContrastColorOf(navBarColour, returnFlat: true)
+                navBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor : ContrastColorOf(navBarColour, returnFlat: true)]
+                searchBar.barTintColor = navBarColour
+                searchBar.searchTextField.backgroundColor = ContrastColorOf(navBarColour, returnFlat: true)
+            }
+        }
         
-        setupNavBarAndTitleColor()
-        
-        //to get a path to where the data is being stored for the current app
-        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
-        
-        tableView.separatorStyle = .none
     }
     
-    //⚠️ NavBar tintColor & titleColor storyboard error fix :
-    func setupNavBarAndTitleColor() {
-        let appearance = UINavigationBarAppearance()
-        appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
-        appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
-        appearance.backgroundColor = UIColor.systemBlue
-        navigationItem.standardAppearance = appearance
-        navigationItem.scrollEdgeAppearance = appearance
+    override func viewDidLoad() {
+        super.viewDidLoad()
+                
+        tableView.separatorStyle = .none
+        //☛ dismiss the virtual keyboard on dragging gesture
+        self.tableView.keyboardDismissMode = .onDrag
     }
     
     // MARK: - TableView DataSource Methods
@@ -139,6 +149,7 @@ class TodoListViewController: SwipeTableViewController {
             }
         }
     }
+    
 }
 
 // MARK: - SearchBar Methods
