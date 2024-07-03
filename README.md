@@ -5,7 +5,7 @@
 * Language: Swift
 * Framework: UIKit
 
-# SCHREENSHOT 
+# SCREENSHOT 
 ![simulation](https://github.com/dodiforth/Todoey/assets/50798761/fbe289a7-45ce-4808-8693-7ca95a66ab66)
 
 ## Acknowledgement
