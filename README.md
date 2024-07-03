@@ -21,9 +21,7 @@ Their repository on GitHub : https://github.com/appbrewery/Todoey-iOS13
 # Concepts Utilised
 - MVC oriented architecture 
 - Storyboard / Autolayout
-- UserDefaults
-- CoreData
-- Realm
+- Realm for local storage
 
 ## Requirements
 * iOS(Deployment Target) 13.2 +
